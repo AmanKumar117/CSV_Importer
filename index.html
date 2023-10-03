@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+</head>
+<body>
+  <h2>Import CSV Data</h2>
+  <label for="csvUrl">CSV URL:</label>
+  <input type="text" id="csvUrl"><br><br>
+  
+  <label for="csvFile">Upload CSV File:</label>
+  <input type="file" id="csvFile"><br><br>
+  
+  <button onclick="importCSV()">Import</button>
+  <br><br>
+  <div id="status"></div>
+  <script>
+    function importCSV() {
+      var csvUrl = document.getElementById("csvUrl").value;
+      var csvFileInput = document.getElementById("csvFile");
+      
+      // Check if a file is selected
+      if (csvFileInput.files.length > 0) {
+        var csvFile = csvFileInput.files[0];
+        var reader = new FileReader();
+        
+        reader.onload = function(event) {
+          var csvData = event.target.result;
+          google.script.run.withSuccessHandler(function(response) {
+            var statusDiv = document.getElementById("status");
+            if (response === 'success') {
+              statusDiv.innerHTML = "CSV data imported successfully!";
+            } else {
+              statusDiv.innerHTML = "Error importing CSV data: " + response;
+            }
+          }).importCSV(csvData);
+        };
+        
+        reader.readAsText(csvFile);
+      } else if (csvUrl) {
+        google.script.run.withSuccessHandler(function(response) {
+          var statusDiv = document.getElementById("status");
+          if (response === 'success') {
+            statusDiv.innerHTML = "CSV data imported successfully!";
+          } else {
+            statusDiv.innerHTML = "Error importing CSV data: " + response;
+          }
+        }).importCSVFromURL(csvUrl);
+      } else {
+        alert("Please provide either a CSV URL or upload a CSV file.");
+      }
+    }
+  </script>
+</body>
+</html>
